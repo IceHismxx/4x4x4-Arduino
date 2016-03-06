@@ -35,19 +35,19 @@ int ledRow3 = 11;  //Row 3
 
 
 //Cols 1,2,3 + Rows can control LEDS 1-9
-int ledCol1 = 9;
-int ledCol2 = 8;
-int ledCol3 = 7;
+int ledCol1 = 10;
+int ledCol2 = 9;
+int ledCol3 = 8;
 
 //Cols 4,5,6 + Rows can control LEDS 10-12
-int ledCol4 = 6;
-int ledCol5 = 5;
-int ledCol6 = 4;
+int ledCol4 = 7;
+int ledCol5 = 6;
+int ledCol6 = 5;
 
 //Cols 4,5,6 + Rows can control LEDS 10-12
-int ledCol7 = 3;
-int ledCol8 = 2;
-int ledCol9 = 1;
+int ledCol7 = 4;
+int ledCol8 = 3;
+int ledCol9 = 2;
 
 
 //define the LED cube size
@@ -56,6 +56,17 @@ int colmax = 9;
 //making an array
 int ledCol[9];
 int ledRow[3];
+
+
+
+/////////////////////music//////////////////
+
+int speakerPin = 0;
+int length = 26;
+char notes[] = "eeeeeeegcde fffffeeeeddedg";
+int beats[] = { 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2};
+
+int tempo = 300;
 
 // the setup routine runs once when you press reset:
 void setup() {                
@@ -79,6 +90,7 @@ void setup() {
   pinMode(ledCol7, OUTPUT); //Left
   pinMode(ledCol8, OUTPUT); //Middle
   pinMode(ledCol9, OUTPUT); //Right
+  pinMode(speakerPin, OUTPUT);
   
   
   //fill array
@@ -101,6 +113,17 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
+
+   for (int i = 0; i < length; i++) {
+    if (notes[i] == ' ') {
+      delay(beats[i] * tempo); // rest
+    } else {
+      playNote(notes[i], beats[i] * tempo);
+    }
+    
+    // pause between notes
+    delay(tempo / 2); 
+  }
   
   frontPaneFigure8();
   rightPaneFigure8();
@@ -111,6 +134,14 @@ void loop() {
   antiClockwise(50);
   antiClockwise(60);
   antiClockwise(70);
+
+ panelRotateCW();
+  panelRotateCW();
+  panelRotateCW();
+  panelRotateCW();
+  panelRotateCW();
+  panelRotateCW();
+  panelRotateCW();
 
  
   clockwise(70);
@@ -125,13 +156,7 @@ void loop() {
   //bottomToTopPanel();
   topToBottomPanel();
   
-  panelRotateCW();
-  panelRotateCW();
-  panelRotateCW();
-  panelRotateCW();
-  panelRotateCW();
-  panelRotateCW();
-  panelRotateCW();
+ 
   
   panelRotateAntiCW();
   panelRotateAntiCW();
@@ -141,8 +166,9 @@ void loop() {
   panelRotateAntiCW();
   panelRotateAntiCW();
   
-  delay(100);
-  paneFTR();
+  delay(200);
+
+    paneFTR();
   paneRTB();
   paneBTL();
   paneLTF();
@@ -166,6 +192,7 @@ void loop() {
   paneRTB();
   paneBTL();
   paneLTF();
+
   
   delay(100);
   rainLight();
@@ -1044,5 +1071,35 @@ void onLED(int row, int col, int value){
 void offLED(int row, int col){
   digitalWrite(row, LOW); //turn on row
   digitalWrite(col, LOW); //turn on col
+}
+
+
+
+
+
+
+////////////////////////////////music///////////////////////////
+
+
+
+
+void playTone(int tone, int duration) {
+  for (long i = 0; i < duration * 1000L; i += tone * 2) {
+    digitalWrite(speakerPin, HIGH);
+    delayMicroseconds(tone);
+    digitalWrite(speakerPin, LOW);
+    delayMicroseconds(tone);
+  }
+}
+void playNote(char note, int duration) {
+  char names[] = { 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C' };
+  int tones[] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956 };
+  
+  // play the tone corresponding to the note name
+  for (int i = 0; i < 8; i++) {
+    if (names[i] == note) {
+      playTone(tones[i], duration);
+    }
+  }
 }
 
